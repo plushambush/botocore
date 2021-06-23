@@ -13,6 +13,42 @@
     "uid":"eks-2017-11-01"
   },
   "operations":{
+    "AssociateIdentityProviderConfig":{
+      "name":"AssociateIdentityProviderConfig",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/identity-provider-configs/associate"
+      },
+      "input":{"shape":"AssociateIdentityProviderConfigRequest"},
+      "output":{"shape":"AssociateIdentityProviderConfigResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidRequestException"}
+      ],
+      "documentation":"<p>Associate an identity provider configuration to a cluster.</p> <p>If you want to authenticate identities using an identity provider, you can create an identity provider configuration and associate it to your cluster. After configuring authentication to your cluster you can create Kubernetes <code>roles</code> and <code>clusterroles</code> to assign permissions to the roles, and then bind the roles to the identities using Kubernetes <code>rolebindings</code> and <code>clusterrolebindings</code>. For more information see <a href=\"https://kubernetes.io/docs/reference/access-authn-authz/rbac/\">Using RBAC Authorization</a> in the Kubernetes documentation.</p>"
+    },
+    "CreateAddon":{
+      "name":"CreateAddon",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/addons"
+      },
+      "input":{"shape":"CreateAddonRequest"},
+      "output":{"shape":"CreateAddonResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"InvalidRequestException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"}
+      ],
+      "documentation":"<p>Creates an Amazon EKS add-on.</p> <p>Amazon EKS add-ons help to automate the provisioning and lifecycle management of common operational software for Amazon EKS clusters. Amazon EKS add-ons can only be used with Amazon EKS clusters running version 1.18 with platform version <code>eks.3</code> or later because add-ons rely on the Server-side Apply Kubernetes feature, which is only available in Kubernetes 1.18 and later.</p>"
+    },
     "CreateCluster":{
       "name":"CreateCluster",
       "http":{
@@ -32,6 +68,60 @@
       ],
       "documentation":"<p>Creates an Amazon EKS control plane. </p> <p>The Amazon EKS control plane consists of control plane instances that run the Kubernetes software, such as <code>etcd</code> and the API server. The control plane runs in an account managed by AWS, and the Kubernetes API is exposed via the Amazon EKS API server endpoint. Each Amazon EKS cluster control plane is single-tenant and unique and runs on its own set of Amazon EC2 instances.</p> <p>The cluster control plane is provisioned across multiple Availability Zones and fronted by an Elastic Load Balancing Network Load Balancer. Amazon EKS also provisions elastic network interfaces in your VPC subnets to provide connectivity from the control plane instances to the nodes (for example, to support <code>kubectl exec</code>, <code>logs</code>, and <code>proxy</code> data flows).</p> <p>Amazon EKS nodes run in your AWS account and connect to your cluster's control plane via the Kubernetes API server endpoint and a certificate file that is created for your cluster.</p> <p>You can use the <code>endpointPublicAccess</code> and <code>endpointPrivateAccess</code> parameters to enable or disable public and private access to your cluster's Kubernetes API server endpoint. By default, public access is enabled, and private access is disabled. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html\">Amazon EKS Cluster Endpoint Access Control</a> in the <i> <i>Amazon EKS User Guide</i> </i>. </p> <p>You can use the <code>logging</code> parameter to enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren't exported to CloudWatch Logs. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html\">Amazon EKS Cluster Control Plane Logs</a> in the <i> <i>Amazon EKS User Guide</i> </i>.</p> <note> <p>CloudWatch Logs ingestion, archive storage, and data scanning rates apply to exported control plane logs. For more information, see <a href=\"http://aws.amazon.com/cloudwatch/pricing/\">Amazon CloudWatch Pricing</a>.</p> </note> <p>Cluster creation typically takes between 10 and 15 minutes. After you create an Amazon EKS cluster, you must configure your Kubernetes tooling to communicate with the API server and launch nodes into your cluster. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/managing-auth.html\">Managing Cluster Authentication</a> and <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html\">Launching Amazon EKS nodes</a> in the <i>Amazon EKS User Guide</i>.</p>"
     },
+    "CreateFargateProfile":{
+      "name":"CreateFargateProfile",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/fargate-profiles"
+      },
+      "input":{"shape":"CreateFargateProfileRequest"},
+      "output":{"shape":"CreateFargateProfileResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"InvalidRequestException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceLimitExceededException"},
+        {"shape":"UnsupportedAvailabilityZoneException"}
+      ],
+      "documentation":"<p>Creates an AWS Fargate profile for your Amazon EKS cluster. You must have at least one Fargate profile in a cluster to be able to run pods on Fargate.</p> <p>The Fargate profile allows an administrator to declare which pods run on Fargate and specify which pods run on which Fargate profile. This declaration is done through the profile’s selectors. Each profile can have up to five selectors that contain a namespace and labels. A namespace is required for every selector. The label field consists of multiple optional key-value pairs. Pods that match the selectors are scheduled on Fargate. If a to-be-scheduled pod matches any of the selectors in the Fargate profile, then that pod is run on Fargate.</p> <p>When you create a Fargate profile, you must specify a pod execution role to use with the pods that are scheduled with the profile. This role is added to the cluster's Kubernetes <a href=\"https://kubernetes.io/docs/admin/authorization/rbac/\">Role Based Access Control</a> (RBAC) for authorization so that the <code>kubelet</code> that is running on the Fargate infrastructure can register with your Amazon EKS cluster so that it can appear in your cluster as a node. The pod execution role also provides IAM permissions to the Fargate infrastructure to allow read access to Amazon ECR image repositories. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html\">Pod Execution Role</a> in the <i>Amazon EKS User Guide</i>.</p> <p>Fargate profiles are immutable. However, you can create a new updated profile to replace an existing profile and then delete the original after the updated profile has finished creating.</p> <p>If any Fargate profiles in a cluster are in the <code>DELETING</code> status, you must wait for that Fargate profile to finish deleting before you can create any other profiles in that cluster.</p> <p>For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html\">AWS Fargate Profile</a> in the <i>Amazon EKS User Guide</i>.</p>"
+    },
+    "CreateNodegroup":{
+      "name":"CreateNodegroup",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/node-groups"
+      },
+      "input":{"shape":"CreateNodegroupRequest"},
+      "output":{"shape":"CreateNodegroupResponse"},
+      "errors":[
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceLimitExceededException"},
+        {"shape":"InvalidRequestException"},
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ServiceUnavailableException"}
+      ],
+      "documentation":"<p>Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html\">Launch template support</a>.</p> <p>An Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html\">Managed Node Groups</a> in the <i>Amazon EKS User Guide</i>. </p>"
+    },
+    "DeleteAddon":{
+      "name":"DeleteAddon",
+      "http":{
+        "method":"DELETE",
+        "requestUri":"/clusters/{name}/addons/{addonName}"
+      },
+      "input":{"shape":"DeleteAddonRequest"},
+      "output":{"shape":"DeleteAddonResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"InvalidRequestException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"}
+      ],
+      "documentation":"<p>Delete an Amazon EKS add-on.</p> <p>When you remove the add-on, it will also be deleted from the cluster. You can always manually start an add-on on the cluster using the Kubernetes API.</p>"
+    },
     "DeleteCluster":{
       "name":"DeleteCluster",
       "http":{
@@ -49,6 +139,72 @@
       ],
       "documentation":"<p>Deletes the Amazon EKS cluster control plane.</p> <p>If you have active services in your cluster that are associated with a load balancer, you must delete those services before deleting the cluster so that the load balancers are deleted properly. Otherwise, you can have orphaned resources in your VPC that prevent you from being able to delete the VPC. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/delete-cluster.html\">Deleting a Cluster</a> in the <i>Amazon EKS User Guide</i>.</p> <p>If you have managed node groups or Fargate profiles attached to the cluster, you must delete them first. For more information, see <a>DeleteNodegroup</a> and <a>DeleteFargateProfile</a>.</p>"
     },
+    "DeleteFargateProfile":{
+      "name":"DeleteFargateProfile",
+      "http":{
+        "method":"DELETE",
+        "requestUri":"/clusters/{name}/fargate-profiles/{fargateProfileName}"
+      },
+      "input":{"shape":"DeleteFargateProfileRequest"},
+      "output":{"shape":"DeleteFargateProfileResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceNotFoundException"}
+      ],
+      "documentation":"<p>Deletes an AWS Fargate profile.</p> <p>When you delete a Fargate profile, any pods running on Fargate that were created with the profile are deleted. If those pods match another Fargate profile, then they are scheduled on Fargate with that profile. If they no longer match any Fargate profiles, then they are not scheduled on Fargate and they may remain in a pending state.</p> <p>Only one Fargate profile in a cluster can be in the <code>DELETING</code> status at a time. You must wait for a Fargate profile to finish deleting before you can delete any other profiles in that cluster.</p>"
+    },
+    "DeleteNodegroup":{
+      "name":"DeleteNodegroup",
+      "http":{
+        "method":"DELETE",
+        "requestUri":"/clusters/{name}/node-groups/{nodegroupName}"
+      },
+      "input":{"shape":"DeleteNodegroupRequest"},
+      "output":{"shape":"DeleteNodegroupResponse"},
+      "errors":[
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ServiceUnavailableException"}
+      ],
+      "documentation":"<p>Deletes an Amazon EKS node group for a cluster.</p>"
+    },
+    "DescribeAddon":{
+      "name":"DescribeAddon",
+      "http":{
+        "method":"GET",
+        "requestUri":"/clusters/{name}/addons/{addonName}"
+      },
+      "input":{"shape":"DescribeAddonRequest"},
+      "output":{"shape":"DescribeAddonResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"InvalidRequestException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"}
+      ],
+      "documentation":"<p>Describes an Amazon EKS add-on.</p>"
+    },
+    "DescribeAddonVersions":{
+      "name":"DescribeAddonVersions",
+      "http":{
+        "method":"GET",
+        "requestUri":"/addons/supported-versions"
+      },
+      "input":{"shape":"DescribeAddonVersionsRequest"},
+      "output":{"shape":"DescribeAddonVersionsResponse"},
+      "errors":[
+        {"shape":"ServerException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidParameterException"}
+      ],
+      "documentation":"<p>Describes the Kubernetes versions that the add-on can be used with.</p>"
+    },
     "DescribeCluster":{
       "name":"DescribeCluster",
       "http":{
@@ -65,20 +221,106 @@
       ],
       "documentation":"<p>Returns descriptive information about an Amazon EKS cluster.</p> <p>The API server endpoint and certificate authority data returned by this operation are required for <code>kubelet</code> and <code>kubectl</code> to communicate with your Kubernetes API server. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html\">Create a kubeconfig for Amazon EKS</a>.</p> <note> <p>The API server endpoint and certificate authority data aren't available until the cluster reaches the <code>ACTIVE</code> state.</p> </note>"
     },
-    "GetClusterKubeconfig":{
-      "name":"GetClusterKubeconfig",
+    "DescribeFargateProfile":{
+      "name":"DescribeFargateProfile",
       "http":{
         "method":"GET",
-        "requestUri":"/clusters/{name}/kubeconfig"
+        "requestUri":"/clusters/{name}/fargate-profiles/{fargateProfileName}"
       },
-      "input":{"shape":"GetClusterKubeconfigRequest"},
-      "output":{"shape":"GetClusterKubeconfigResponse"},
+      "input":{"shape":"DescribeFargateProfileRequest"},
+      "output":{"shape":"DescribeFargateProfileResponse"},
       "errors":[
-        {"shape":"ClusterNotReady"},
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceNotFoundException"}
+      ],
+      "documentation":"<p>Returns descriptive information about an AWS Fargate profile.</p>"
+    },
+    "DescribeIdentityProviderConfig":{
+      "name":"DescribeIdentityProviderConfig",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/identity-provider-configs/describe"
+      },
+      "input":{"shape":"DescribeIdentityProviderConfigRequest"},
+      "output":{"shape":"DescribeIdentityProviderConfigResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ResourceNotFoundException"},
         {"shape":"ClientException"},
         {"shape":"ServerException"},
         {"shape":"ServiceUnavailableException"}
-      ]
+      ],
+      "documentation":"<p>Returns descriptive information about an identity provider configuration.</p>"
+    },
+    "DescribeNodegroup":{
+      "name":"DescribeNodegroup",
+      "http":{
+        "method":"GET",
+        "requestUri":"/clusters/{name}/node-groups/{nodegroupName}"
+      },
+      "input":{"shape":"DescribeNodegroupRequest"},
+      "output":{"shape":"DescribeNodegroupResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ServiceUnavailableException"}
+      ],
+      "documentation":"<p>Returns descriptive information about an Amazon EKS node group.</p>"
+    },
+    "DescribeUpdate":{
+      "name":"DescribeUpdate",
+      "http":{
+        "method":"GET",
+        "requestUri":"/clusters/{name}/updates/{updateId}"
+      },
+      "input":{"shape":"DescribeUpdateRequest"},
+      "output":{"shape":"DescribeUpdateResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceNotFoundException"}
+      ],
+      "documentation":"<p>Returns descriptive information about an update against your Amazon EKS cluster or associated managed node group.</p> <p>When the status of the update is <code>Succeeded</code>, the update is complete. If an update fails, the status is <code>Failed</code>, and an error detail explains the reason for the failure.</p>"
+    },
+    "DisassociateIdentityProviderConfig":{
+      "name":"DisassociateIdentityProviderConfig",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/identity-provider-configs/disassociate"
+      },
+      "input":{"shape":"DisassociateIdentityProviderConfigRequest"},
+      "output":{"shape":"DisassociateIdentityProviderConfigResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidRequestException"}
+      ],
+      "documentation":"<p>Disassociates an identity provider configuration from a cluster. If you disassociate an identity provider from your cluster, users included in the provider can no longer access the cluster. However, you can still access the cluster with AWS IAM users.</p>"
+    },
+    "ListAddons":{
+      "name":"ListAddons",
+      "http":{
+        "method":"GET",
+        "requestUri":"/clusters/{name}/addons"
+      },
+      "input":{"shape":"ListAddonsRequest"},
+      "output":{"shape":"ListAddonsResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"InvalidRequestException"},
+        {"shape":"ClientException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"ServerException"}
+      ],
+      "documentation":"<p>Lists the available add-ons.</p>"
     },
     "ListClusters":{
       "name":"ListClusters",
@@ -96,19 +338,203 @@
       ],
       "documentation":"<p>Lists the Amazon EKS clusters in your AWS account in the specified Region.</p>"
     },
-    "ResizeCluster":{
-      "name":"ResizeCluster",
+    "ListFargateProfiles":{
+      "name":"ListFargateProfiles",
       "http":{
-        "method":"POST",
-        "requestUri":"/clusters/{name}/resize"
+        "method":"GET",
+        "requestUri":"/clusters/{name}/fargate-profiles"
       },
-      "input":{"shape":"ResizeClusterRequest"},
-      "output":{"shape":"ResizeClusterResponse"},
+      "input":{"shape":"ListFargateProfilesRequest"},
+      "output":{"shape":"ListFargateProfilesResponse"},
       "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"}
+      ],
+      "documentation":"<p>Lists the AWS Fargate profiles associated with the specified cluster in your AWS account in the specified Region.</p>"
+    },
+    "ListIdentityProviderConfigs":{
+      "name":"ListIdentityProviderConfigs",
+      "http":{
+        "method":"GET",
+        "requestUri":"/clusters/{name}/identity-provider-configs"
+      },
+      "input":{"shape":"ListIdentityProviderConfigsRequest"},
+      "output":{"shape":"ListIdentityProviderConfigsResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
         {"shape":"ClientException"},
         {"shape":"ServerException"},
-        {"shape":"ServiceUnavailableException"}
-      ]
+        {"shape":"ServiceUnavailableException"},
+        {"shape":"ResourceNotFoundException"}
+      ],
+      "documentation":"<p>A list of identity provider configurations.</p>"
+    },
+    "ListNodegroups":{
+      "name":"ListNodegroups",
+      "http":{
+        "method":"GET",
+        "requestUri":"/clusters/{name}/node-groups"
+      },
+      "input":{"shape":"ListNodegroupsRequest"},
+      "output":{"shape":"ListNodegroupsResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ServiceUnavailableException"},
+        {"shape":"ResourceNotFoundException"}
+      ],
+      "documentation":"<p>Lists the Amazon EKS managed node groups associated with the specified cluster in your AWS account in the specified Region. Self-managed node groups are not listed.</p>"
+    },
+    "ListTagsForResource":{
+      "name":"ListTagsForResource",
+      "http":{
+        "method":"GET",
+        "requestUri":"/tags/{resourceArn}"
+      },
+      "input":{"shape":"ListTagsForResourceRequest"},
+      "output":{"shape":"ListTagsForResourceResponse"},
+      "errors":[
+        {"shape":"BadRequestException"},
+        {"shape":"NotFoundException"}
+      ],
+      "documentation":"<p>List the tags for an Amazon EKS resource.</p>"
+    },
+    "ListUpdates":{
+      "name":"ListUpdates",
+      "http":{
+        "method":"GET",
+        "requestUri":"/clusters/{name}/updates"
+      },
+      "input":{"shape":"ListUpdatesRequest"},
+      "output":{"shape":"ListUpdatesResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceNotFoundException"}
+      ],
+      "documentation":"<p>Lists the updates associated with an Amazon EKS cluster or managed node group in your AWS account, in the specified Region.</p>"
+    },
+    "TagResource":{
+      "name":"TagResource",
+      "http":{
+        "method":"POST",
+        "requestUri":"/tags/{resourceArn}"
+      },
+      "input":{"shape":"TagResourceRequest"},
+      "output":{"shape":"TagResourceResponse"},
+      "errors":[
+        {"shape":"BadRequestException"},
+        {"shape":"NotFoundException"}
+      ],
+      "documentation":"<p>Associates the specified tags to a resource with the specified <code>resourceArn</code>. If existing tags on a resource are not specified in the request parameters, they are not changed. When a resource is deleted, the tags associated with that resource are deleted as well. Tags that you create for Amazon EKS resources do not propagate to any other resources associated with the cluster. For example, if you tag a cluster with this operation, that tag does not automatically propagate to the subnets and nodes associated with the cluster.</p>"
+    },
+    "UntagResource":{
+      "name":"UntagResource",
+      "http":{
+        "method":"DELETE",
+        "requestUri":"/tags/{resourceArn}"
+      },
+      "input":{"shape":"UntagResourceRequest"},
+      "output":{"shape":"UntagResourceResponse"},
+      "errors":[
+        {"shape":"BadRequestException"},
+        {"shape":"NotFoundException"}
+      ],
+      "documentation":"<p>Deletes specified tags from a resource.</p>"
+    },
+    "UpdateAddon":{
+      "name":"UpdateAddon",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/addons/{addonName}/update"
+      },
+      "input":{"shape":"UpdateAddonRequest"},
+      "output":{"shape":"UpdateAddonResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"InvalidRequestException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"}
+      ],
+      "documentation":"<p>Updates an Amazon EKS add-on.</p>"
+    },
+    "UpdateClusterConfig":{
+      "name":"UpdateClusterConfig",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/update-config"
+      },
+      "input":{"shape":"UpdateClusterConfigRequest"},
+      "output":{"shape":"UpdateClusterConfigResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidRequestException"}
+      ],
+      "documentation":"<p>Updates an Amazon EKS cluster configuration. Your cluster continues to function during the update. The response output includes an update ID that you can use to track the status of your cluster update with the <a>DescribeUpdate</a> API operation.</p> <p>You can use this API operation to enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren't exported to CloudWatch Logs. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html\">Amazon EKS Cluster Control Plane Logs</a> in the <i> <i>Amazon EKS User Guide</i> </i>.</p> <note> <p>CloudWatch Logs ingestion, archive storage, and data scanning rates apply to exported control plane logs. For more information, see <a href=\"http://aws.amazon.com/cloudwatch/pricing/\">Amazon CloudWatch Pricing</a>.</p> </note> <p>You can also use this API operation to enable or disable public and private access to your cluster's Kubernetes API server endpoint. By default, public access is enabled, and private access is disabled. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html\">Amazon EKS Cluster Endpoint Access Control</a> in the <i> <i>Amazon EKS User Guide</i> </i>. </p> <important> <p>At this time, you can not update the subnets or security group IDs for an existing cluster.</p> </important> <p>Cluster updates are asynchronous, and they should finish within a few minutes. During an update, the cluster status moves to <code>UPDATING</code> (this status transition is eventually consistent). When the update is complete (either <code>Failed</code> or <code>Successful</code>), the cluster status moves to <code>Active</code>.</p>"
+    },
+    "UpdateClusterVersion":{
+      "name":"UpdateClusterVersion",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/updates"
+      },
+      "input":{"shape":"UpdateClusterVersionRequest"},
+      "output":{"shape":"UpdateClusterVersionResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidRequestException"}
+      ],
+      "documentation":"<p>Updates an Amazon EKS cluster to the specified Kubernetes version. Your cluster continues to function during the update. The response output includes an update ID that you can use to track the status of your cluster update with the <a>DescribeUpdate</a> API operation.</p> <p>Cluster updates are asynchronous, and they should finish within a few minutes. During an update, the cluster status moves to <code>UPDATING</code> (this status transition is eventually consistent). When the update is complete (either <code>Failed</code> or <code>Successful</code>), the cluster status moves to <code>Active</code>.</p> <p>If your cluster has managed node groups attached to it, all of your node groups’ Kubernetes versions must match the cluster’s Kubernetes version in order to update the cluster to a new Kubernetes version.</p>"
+    },
+    "UpdateNodegroupConfig":{
+      "name":"UpdateNodegroupConfig",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/node-groups/{nodegroupName}/update-config"
+      },
+      "input":{"shape":"UpdateNodegroupConfigRequest"},
+      "output":{"shape":"UpdateNodegroupConfigResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidRequestException"}
+      ],
+      "documentation":"<p>Updates an Amazon EKS managed node group configuration. Your node group continues to function during the update. The response output includes an update ID that you can use to track the status of your node group update with the <a>DescribeUpdate</a> API operation. Currently you can update the Kubernetes labels for a node group or the scaling configuration.</p>"
+    },
+    "UpdateNodegroupVersion":{
+      "name":"UpdateNodegroupVersion",
+      "http":{
+        "method":"POST",
+        "requestUri":"/clusters/{name}/node-groups/{nodegroupName}/update-version"
+      },
+      "input":{"shape":"UpdateNodegroupVersionRequest"},
+      "output":{"shape":"UpdateNodegroupVersionResponse"},
+      "errors":[
+        {"shape":"InvalidParameterException"},
+        {"shape":"ClientException"},
+        {"shape":"ServerException"},
+        {"shape":"ResourceInUseException"},
+        {"shape":"ResourceNotFoundException"},
+        {"shape":"InvalidRequestException"}
+      ],
+      "documentation":"<p>Updates the Kubernetes version or AMI version of an Amazon EKS managed node group.</p> <p>You can update a node group using a launch template only if the node group was originally deployed with a launch template. If you need to update a custom AMI in a node group that was deployed with a launch template, then update your custom AMI, specify the new ID in a new version of the launch template, and then update the node group to the new version of the launch template.</p> <p>If you update without a launch template, then you can update to the latest available AMI version of a node group's current Kubernetes version by not specifying a Kubernetes version in the request. You can update to the latest AMI version of your cluster's current Kubernetes version by specifying your cluster's Kubernetes version in the request. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/eks-linux-ami-versions.html\">Amazon EKS optimized Amazon Linux 2 AMI versions</a> in the <i>Amazon EKS User Guide</i>.</p> <p>You cannot roll back a node group to an earlier Kubernetes version or AMI version.</p> <p>When a node in a managed node group is terminated due to a scaling action or update, the pods in that node are drained first. Amazon EKS attempts to drain the nodes gracefully and will fail if it is unable to do so. You can <code>force</code> the update if Amazon EKS is unable to drain the nodes as a result of a pod disruption budget issue.</p>"
     }
   },
   "shapes":{
@@ -377,37 +803,72 @@
     "Cluster":{
       "type":"structure",
       "members":{
-        "Name":{"shape":"String"},
-        "Version":{"shape":"String"},
-        "MastersQuantity":{"shape":"String"},
-        "WorkersQuantity":{"shape":"String"},
-        "MastersInstanceType":{"shape":"String"},
-        "WorkersInstanceType":{"shape":"String"},
-        "MastersVolumeType":{"shape":"String"},
-        "WorkersVolumeType":{"shape":"String"},
-        "MastersVolumeSize":{"shape":"String"},
-        "WorkersVolumeSize":{"shape":"String"},
-        "MastersVolumeIops":{"shape":"String"},
-        "WorkersVolumeIops":{"shape":"String"},
-        "SecurityGroups":{"shape":"String"},
-        "Instances":{"shape":"StringList"},
-        "SubnetId":{"shape":"String"},
-        "SshKeyName":{"shape":"String"},
-        "Status":{"shape":"String"},
-        "Health":{"shape":"String"},
-        "DashboardToken":{"shape":"String"},
-        "DockerRegistry":{"shape":"String"},
-        "Ingress":{"shape":"String"},
-        "ApiServer":{"shape":"String"},
-        "ErrorCode":{"shape":"String"},
-        "ErrorDescription":{"shape":"String"},
-        "UsePlacementGroups":{"shape":"String"},
-        "UserData":{"shape":"String"},
-        "UserDataContentType":{"shape":"String"},
-        "HasNewWarnings":{"shape":"String"},
-        "TotalCPUCount":{"shape":"String"},
-        "TotalMemory":{"shape":"String"}
-      }
+        "name":{
+          "shape":"String",
+          "documentation":"<p>The name of the cluster.</p>"
+        },
+        "arn":{
+          "shape":"String",
+          "documentation":"<p>The Amazon Resource Name (ARN) of the cluster.</p>"
+        },
+        "createdAt":{
+          "shape":"Timestamp",
+          "documentation":"<p>The Unix epoch timestamp in seconds for when the cluster was created.</p>"
+        },
+        "version":{
+          "shape":"String",
+          "documentation":"<p>The Kubernetes server version for the cluster.</p>"
+        },
+        "endpoint":{
+          "shape":"String",
+          "documentation":"<p>The endpoint for your Kubernetes API server.</p>"
+        },
+        "roleArn":{
+          "shape":"String",
+          "documentation":"<p>The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.</p>"
+        },
+        "resourcesVpcConfig":{
+          "shape":"VpcConfigResponse",
+          "documentation":"<p>The VPC configuration used by the cluster control plane. Amazon EKS VPC resources have specific requirements to work properly with Kubernetes. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html\">Cluster VPC Considerations</a> and <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html\">Cluster Security Group Considerations</a> in the <i>Amazon EKS User Guide</i>.</p>"
+        },
+        "kubernetesNetworkConfig":{
+          "shape":"KubernetesNetworkConfigResponse",
+          "documentation":"<p>The Kubernetes network configuration for the cluster.</p>"
+        },
+        "logging":{
+          "shape":"Logging",
+          "documentation":"<p>The logging configuration for your cluster.</p>"
+        },
+        "identity":{
+          "shape":"Identity",
+          "documentation":"<p>The identity provider information for the cluster.</p>"
+        },
+        "status":{
+          "shape":"ClusterStatus",
+          "documentation":"<p>The current status of the cluster.</p>"
+        },
+        "certificateAuthority":{
+          "shape":"Certificate",
+          "documentation":"<p>The <code>certificate-authority-data</code> for your cluster.</p>"
+        },
+        "clientRequestToken":{
+          "shape":"String",
+          "documentation":"<p>Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.</p>"
+        },
+        "platformVersion":{
+          "shape":"String",
+          "documentation":"<p>The platform version of your Amazon EKS cluster. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/platform-versions.html\">Platform Versions</a> in the <i> <i>Amazon EKS User Guide</i> </i>.</p>"
+        },
+        "tags":{
+          "shape":"TagMap",
+          "documentation":"<p>The metadata that you apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value, both of which you define. Cluster tags do not propagate to any other resources associated with the cluster. </p>"
+        },
+        "encryptionConfig":{
+          "shape":"EncryptionConfigList",
+          "documentation":"<p>The encryption configuration for the cluster.</p>"
+        }
+      },
+      "documentation":"<p>An object representing an Amazon EKS cluster.</p>"
     },
     "ClusterName":{
       "type":"string",
@@ -497,45 +958,47 @@
       "type":"structure",
       "required":[
         "name",
-        "version",
-        "masters_quantity",
-        "workers_quantity",
-        "masters_instance_type",
-        "workers_instance_type",
-        "masters_volume_type",
-        "workers_volume_type",
-        "masters_volume_size",
-        "workers_volume_size",
-        "subnet_id"
+        "roleArn",
+        "resourcesVpcConfig"
       ],
       "members":{
-        "name":{"shape":"String"},
-        "version":{"shape":"String"},
-        "masters_quantity":{"shape":"Integer"},
-        "workers_quantity":{"shape":"Integer"},
-        "masters_instance_type":{"shape":"String"},
-        "workers_instance_type":{"shape":"String"},
-        "masters_volume_type":{"shape":"String"},
-        "workers_volume_type":{"shape":"String"},
-        "masters_volume_size":{"shape":"Integer"},
-        "workers_volume_size":{"shape":"Integer"},
-        "subnet_id":{"shape":"String"},
-        "masters_volume_iops":{"shape":"Integer"},
-        "workers_volume_iops":{"shape":"Integer"},
-        "master_public_ip_required":{"shape":"Boolean"},
-        "security_groups":{"shape":"StringList"},
-        "public_key_name":{"shape":"String"},
-        "docker_registry_required":{"shape":"Boolean"},
-        "docker_registry_volume_type":{"shape":"String"},
-        "docker_registry_volume_size":{"shape":"Integer"},
-        "docker_registry_volume_iops":{"shape":"Integer"},
-        "ingress_required":{"shape":"Integer"},
-        "ingress_public_ip_required":{"shape":"Boolean"},
-        "ebs_provider_required":{"shape":"Boolean"},
-        "ebs_user":{"shape":"String"},
-        "use_placement_groups":{"shape":"Boolean"},
-        "user_data":{"shape":"String"},
-        "user_data_content_type":{"shape":"String"}
+        "name":{
+          "shape":"ClusterName",
+          "documentation":"<p>The unique name to give to your cluster.</p>"
+        },
+        "version":{
+          "shape":"String",
+          "documentation":"<p>The desired Kubernetes version for your cluster. If you don't specify a value here, the latest version available in Amazon EKS is used.</p>"
+        },
+        "roleArn":{
+          "shape":"String",
+          "documentation":"<p>The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html\">Amazon EKS Service IAM Role</a> in the <i> <i>Amazon EKS User Guide</i> </i>.</p>"
+        },
+        "resourcesVpcConfig":{
+          "shape":"VpcConfigRequest",
+          "documentation":"<p>The VPC configuration used by the cluster control plane. Amazon EKS VPC resources have specific requirements to work properly with Kubernetes. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html\">Cluster VPC Considerations</a> and <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html\">Cluster Security Group Considerations</a> in the <i>Amazon EKS User Guide</i>. You must specify at least two subnets. You can specify up to five security groups, but we recommend that you use a dedicated security group for your cluster control plane.</p>"
+        },
+        "kubernetesNetworkConfig":{
+          "shape":"KubernetesNetworkConfigRequest",
+          "documentation":"<p>The Kubernetes network configuration for the cluster.</p>"
+        },
+        "logging":{
+          "shape":"Logging",
+          "documentation":"<p>Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren't exported to CloudWatch Logs. For more information, see <a href=\"https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html\">Amazon EKS Cluster Control Plane Logs</a> in the <i> <i>Amazon EKS User Guide</i> </i>.</p> <note> <p>CloudWatch Logs ingestion, archive storage, and data scanning rates apply to exported control plane logs. For more information, see <a href=\"http://aws.amazon.com/cloudwatch/pricing/\">Amazon CloudWatch Pricing</a>.</p> </note>"
+        },
+        "clientRequestToken":{
+          "shape":"String",
+          "documentation":"<p>Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.</p>",
+          "idempotencyToken":true
+        },
+        "tags":{
+          "shape":"TagMap",
+          "documentation":"<p>The metadata to apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value, both of which you define.</p>"
+        },
+        "encryptionConfig":{
+          "shape":"EncryptionConfigList",
+          "documentation":"<p>The encryption configuration for the cluster.</p>"
+        }
       }
     },
     "CreateClusterResponse":{
@@ -1189,32 +1652,6 @@
       "max":100,
       "min":1
     },
-    "GetClusterKubeconfigRequest":{
-      "type":"structure",
-      "required":["name"],
-      "members":{
-        "name":{
-          "shape":"String",
-          "documentation":"<p>The name of the cluster to describe.</p>",
-          "location":"uri",
-          "locationName":"name"
-        }
-      }
-    },
-    "GetClusterKubeconfigResponse":{
-      "type":"structure",
-      "members":{
-        "kubeconfig":{"shape":"String"}
-      }
-    },
-    "ClusterNotReady":{
-      "type":"structure",
-      "members":{
-        "Message": {"shape": "String"}
-      },
-      "error":{"httpStatusCode":400},
-      "exception":true
-    },
     "Identity":{
       "type":"structure",
       "members":{
@@ -1257,7 +1694,6 @@
       "type":"list",
       "member":{"shape":"IdentityProviderConfig"}
     },
-    "Integer":{"type":"integer"},
     "InvalidParameterException":{
       "type":"structure",
       "members":{
@@ -1984,26 +2420,6 @@
         }
       },
       "documentation":"<p>An object representing the remote access configuration for the managed node group.</p>"
-    },
-    "ResizeClusterRequest":{
-      "type":"structure",
-      "required":[
-        "name",
-        "workers_quantity"],
-      "members":{
-        "name":{
-          "shape":"String",
-          "location":"uri",
-          "locationName":"name"
-        },
-        "workers_quantity":{"shape":"Integer"}
-      }
-    },
-    "ResizeClusterResponse":{
-      "type":"structure",
-      "members":{
-        "cluster":{"shape":"Cluster"}
-      }
     },
     "ResolveConflicts":{
       "type":"string",
