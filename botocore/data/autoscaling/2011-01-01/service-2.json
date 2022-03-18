@@ -725,10 +725,6 @@
         "requestUri":"/"
       },
       "input":{"shape":"PutScalingPolicyType"},
-      "output":{
-        "shape":"PolicyARNType",
-        "resultWrapper":"PutScalingPolicyResult"
-      },
       "errors":[
         {"shape":"LimitExceededFault"},
         {"shape":"ResourceContentionFault"},
@@ -943,11 +939,11 @@
           "documentation":"<p>The reason the activity began.</p>"
         },
         "StartTime":{
-          "shape":"TimestampType",
+          "shape":"TimestampString",
           "documentation":"<p>The start time of the activity.</p>"
         },
         "EndTime":{
-          "shape":"TimestampType",
+          "shape":"TimestampString",
           "documentation":"<p>The end time of the activity.</p>"
         },
         "StatusCode":{
@@ -1177,7 +1173,7 @@
           "documentation":"<p>The EC2 instances associated with the group.</p>"
         },
         "CreatedTime":{
-          "shape":"TimestampType",
+          "shape":"TimestampString",
           "documentation":"<p>The date and time the group was created.</p>"
         },
         "SuspendedProcesses":{
@@ -4061,6 +4057,7 @@
       "member":{"shape":"XmlStringMaxLen1600"}
     },
     "TimestampType":{"type":"timestamp"},
+    "TimestampString":{"type":"string"},
     "UpdateAutoScalingGroupType":{
       "type":"structure",
       "required":["AutoScalingGroupName"],
