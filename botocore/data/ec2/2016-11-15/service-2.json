@@ -24406,6 +24406,10 @@
           "documentation":"<p>The ID of the AMI used to launch the instance.</p>",
           "locationName":"imageId"
         },
+        "ImageDescription":{
+          "shape":"String",
+          "locationName":"imageDescription"
+        },
         "InstanceId":{
           "shape":"String",
           "documentation":"<p>The ID of the instance.</p>",
@@ -24590,6 +24594,10 @@
           "shape":"StateReason",
           "documentation":"<p>The reason for the most recent state transition.</p>",
           "locationName":"stateReason"
+        },
+        "Switches":{
+          "shape":"SwitchList",
+          "locationName":"switchesSet"
         },
         "Tags":{
           "shape":"TagList",
