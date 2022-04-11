@@ -35595,7 +35595,7 @@
           "shape":"VirtualizationType",
           "documentation":"<p>The type of virtualization.</p>"
         },
-        "SwitchId":{
+        "SwitchIds":{
           "shape":"SwitchIdList",
           "documentation":"<p>The ID of the virtual switch.</p>"
         },
@@ -41123,15 +41123,15 @@
         "locationName":"item"
       }
     },
-    "Switch": {
-      "type": "structure",
-      "members": {
-        "SwitchId": {
-          "shape": "String",
+    "Switch":{
+      "type":"structure",
+      "members":{
+        "SwitchId":{
+          "shape":"String",
           "locationName":"switchId"
         },
-        "SwitchName": {
-          "shape": "String",
+        "SwitchName":{
+          "shape":"String",
           "locationName":"switchName"
         }
       }
