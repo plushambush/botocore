@@ -24410,6 +24410,10 @@
           "documentation":"<p>The ID of the AMI used to launch the instance.</p>",
           "locationName":"imageId"
         },
+        "ImageDescription":{
+          "shape":"String",
+          "locationName":"imageDescription"
+        },
         "InstanceId":{
           "shape":"String",
           "documentation":"<p>The ID of the instance.</p>",
@@ -24594,6 +24598,10 @@
           "shape":"StateReason",
           "documentation":"<p>The reason for the most recent state transition.</p>",
           "locationName":"stateReason"
+        },
+        "Switches":{
+          "shape":"SwitchList",
+          "locationName":"switchesSet"
         },
         "Tags":{
           "shape":"TagList",
@@ -25194,6 +25202,11 @@
           "documentation":"<p>The ID of the subnet.</p>",
           "locationName":"subnetId"
         },
+        "SwitchId":{
+          "shape":"String",
+          "documentation":"<p>The ID of the switch.</p>",
+          "locationName":"switchId"
+        },
         "VpcId":{
           "shape":"String",
           "documentation":"<p>The ID of the VPC.</p>",
@@ -25210,6 +25223,16 @@
     "InstanceNetworkInterfaceAssociation":{
       "type":"structure",
       "members":{
+        "AllocationId":{
+          "shape":"String",
+          "documentation":"<p>The allocation ID.</p>",
+          "locationName":"allocationId"
+        },
+        "AssociationId":{
+          "shape":"String",
+          "documentation":"<p>The association ID.</p>",
+          "locationName":"associationId"
+        },
         "CarrierIp":{
           "shape":"String",
           "documentation":"<p>The carrier IP address associated with the network interface.</p>",
@@ -35572,6 +35595,22 @@
           "shape":"InstanceType",
           "documentation":"<p>The instance type. For more information, see <a href=\"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html\">Instance types</a> in the <i>Amazon EC2 User Guide</i>.</p> <p>Default: <code>m1.small</code> </p>"
         },
+        "VirtualizationType":{
+          "shape":"VirtualizationType",
+          "documentation":"<p>The type of virtualization.</p>"
+        },
+        "SwitchIds":{
+          "shape":"SwitchIdList",
+          "documentation":"<p>The ID of the virtual switch.</p>"
+        },
+        "HighAvailable":{
+          "shape":"Boolean",
+          "documentation":"<p>The high availability mode.</p>"
+        },
+        "AddressingType":{
+          "shape":"String",
+          "documentation":"<p>The type of the IP address.</p>"
+        },
         "Ipv6AddressCount":{
           "shape":"Integer",
           "documentation":"<p>[EC2-VPC] The number of IPv6 addresses to associate with the primary network interface. Amazon EC2 chooses the IPv6 addresses from the range of your subnet. You cannot specify this option and the option to assign specific IPv6 addresses in the same request. You can specify this option if you've specified a minimum number of instances to launch.</p> <p>You cannot specify this option and the network interfaces option in the same request.</p>"
@@ -41078,13 +41117,42 @@
       "type":"string",
       "enum":[
         "hvm",
-        "paravirtual"
+        "hvm-legacy"
       ]
     },
     "VirtualizationTypeList":{
       "type":"list",
       "member":{
         "shape":"VirtualizationType",
+        "locationName":"item"
+      }
+    },
+    "Switch":{
+      "type":"structure",
+      "members":{
+        "SwitchId":{
+          "shape":"String",
+          "locationName":"switchId"
+        },
+        "SwitchName":{
+          "shape":"String",
+          "locationName":"switchName"
+        }
+      }
+    },
+    "SwitchId":{
+      "type":"string"
+    },
+    "SwitchIdList":{
+      "type":"list",
+      "member":{
+        "shape":"SwitchId"
+      }
+    },
+    "SwitchList":{
+      "type":"list",
+      "member":{
+        "shape":"Switch",
         "locationName":"item"
       }
     },
