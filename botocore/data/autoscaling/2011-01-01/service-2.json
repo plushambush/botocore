@@ -665,6 +665,7 @@
         "requestUri":"/"
       },
       "input":{"shape":"ExecutePolicyType"},
+      "output":{"shape":"ExecutePolicyResponse"},
       "errors":[
         {"shape":"ScalingActivityInProgressFault"},
         {"shape":"ResourceContentionFault"}
@@ -2371,6 +2372,14 @@
         "BreachThreshold":{
           "shape":"MetricScale",
           "documentation":"<p>The breach threshold for the alarm.</p> <p>Required if the policy type is <code>StepScaling</code> and not supported otherwise.</p>"
+        }
+      }
+    },
+    "ExecutePolicyResponse":{
+      "type": "structure",
+      "members": {
+        "DesiredCapacity": {
+          "shape": "AutoScalingGroupDesiredCapacity"
         }
       }
     },
