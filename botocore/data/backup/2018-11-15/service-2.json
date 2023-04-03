@@ -786,6 +786,17 @@
       "documentation":"<p>Updates an existing backup plan identified by its <code>backupPlanId</code> with the input document in JSON format. The new version is uniquely identified by a <code>VersionId</code>.</p>",
       "idempotent":true
     },
+    "UpdateBackupSelection":{
+      "name":"UpdateBackupSelection",
+      "http":{
+        "method":"POST",
+        "requestUri":"/backup/plans/{backupPlanId}/selections/{selectionId}"
+      },
+      "input":{"shape":"UpdateBackupSelectionInput"},
+      "output":{"shape":"UpdateBackupSelectionOutput"},
+      "documentation":"<p>Updates a JSON document that specifies a set of resources to assign to a backup plan. Resources can be included by specifying patterns for a <code>ListOfTags</code> and selected <code>Resources</code>. </p> <p>For example, consider the following patterns:</p> <ul> <li> <p> <code>Resources: \"arn:aws:ec2:region:account-id:volume/volume-id\"</code> </p> </li> <li> <p> <code>ConditionKey:\"department\"</code> </p> <p> <code>ConditionValue:\"finance\"</code> </p> <p> <code>ConditionType:\"StringEquals\"</code> </p> </li> <li> <p> <code>ConditionKey:\"importance\"</code> </p> <p> <code>ConditionValue:\"critical\"</code> </p> <p> <code>ConditionType:\"StringEquals\"</code> </p> </li> </ul> <p>Using these patterns would back up all Amazon Elastic Block Store (Amazon EBS) volumes that are tagged as <code>\"department=finance\"</code>, <code>\"importance=critical\"</code>, in addition to an EBS volume with the specified volume ID.</p> <p>Resources and conditions are additive in that all resources that match the pattern are selected. This shouldn't be confused with a logical AND, where all conditions must match. The matching patterns are logically put together using the OR operator. In other words, all patterns that match are selected for backup.</p>",
+      "idempotent":true
+    },
     "UpdateGlobalSettings":{
       "name":"UpdateGlobalSettings",
       "http":{
@@ -1103,6 +1114,10 @@
         "LastExecutionDate":{
           "shape":"timestamp",
           "documentation":"<p>The last time a job to back up resources was run with this rule. A date and time, in Unix format and Coordinated Universal Time (UTC). The value of <code>LastExecutionDate</code> is accurate to milliseconds. For example, the value 1516925490.087 represents Friday, January 26, 2018 12:11:30.087 AM.</p>"
+        },
+        "NextExecutionDate":{
+          "shape":"timestamp",
+          "documentation":"<p>The next time a job to back up resources will be run. A date and time, in Unix format and Coordinated Universal Time (UTC). The value of <code>NextExecutionDate</code> is accurate to milliseconds. For example, the value 1516925490.087 represents Friday, January 26, 2018 12:11:30.087 AM.</p>"
         },
         "AdvancedBackupSettings":{
           "shape":"AdvancedBackupSettings",
@@ -2021,6 +2036,10 @@
           "shape":"boolean",
           "documentation":"<p>A Boolean value that is returned as <code>TRUE</code> if the specified recovery point is encrypted, or <code>FALSE</code> if the recovery point is not encrypted.</p>"
         },
+        "IsConsistent":{
+          "shape":"boolean",
+          "documentation":"<p>A Boolean value that is returned as <code>TRUE</code> if the specified recovery point is consistent, or <code>FALSE</code> if the recovery point is not consistent.</p>"
+        },
         "StorageClass":{
           "shape":"StorageClass",
           "documentation":"<p>Specifies the storage class of the recovery point. Valid values are <code>WARM</code> or <code>COLD</code>.</p>"
@@ -2227,6 +2246,10 @@
         "LastExecutionDate":{
           "shape":"timestamp",
           "documentation":"<p>The last time a job to back up resources was run with this backup plan. A date and time, in Unix format and Coordinated Universal Time (UTC). The value of <code>LastExecutionDate</code> is accurate to milliseconds. For example, the value 1516925490.087 represents Friday, January 26, 2018 12:11:30.087 AM.</p>"
+        },
+        "NextExecutionDate":{
+          "shape":"timestamp",
+          "documentation":"<p>The next time a job to back up resources will be run. A date and time, in Unix format and Coordinated Universal Time (UTC). The value of <code>NextExecutionDate</code> is accurate to milliseconds. For example, the value 1516925490.087 represents Friday, January 26, 2018 12:11:30.087 AM.</p>"
         },
         "AdvancedBackupSettings":{
           "shape":"AdvancedBackupSettings",
@@ -3167,6 +3190,10 @@
           "shape":"boolean",
           "documentation":"<p>A Boolean value that is returned as <code>TRUE</code> if the specified recovery point is encrypted, or <code>FALSE</code> if the recovery point is not encrypted.</p>"
         },
+        "IsConsistent":{
+          "shape":"boolean",
+          "documentation":"<p>A Boolean value that is returned as <code>TRUE</code> if the specified recovery point is consistent, or <code>FALSE</code> if the recovery point is not consistent.</p>"
+        },
         "LastRestoreTime":{
           "shape":"timestamp",
           "documentation":"<p>The date and time a recovery point was last restored, in Unix format and Coordinated Universal Time (UTC). The value of <code>LastRestoreTime</code> is accurate to milliseconds. For example, the value 1516925490.087 represents Friday, January 26, 2018 12:11:30.087 AM.</p>"
@@ -3204,6 +3231,10 @@
         "BackupVaultName":{
           "shape":"BackupVaultName",
           "documentation":"<p>The name of a logical container where backups are stored. Backup vaults are identified by names that are unique to the account used to create them and the AWS Region where they are created. They consist of lowercase letters, numbers, and hyphens.</p>"
+        },
+        "IsConsistent":{
+          "shape":"boolean",
+          "documentation":"<p>A Boolean value that is returned as <code>TRUE</code> if the specified recovery point is consistent, or <code>FALSE</code> if the recovery point is not consistent.</p>"
         }
       },
       "documentation":"<p>Contains detailed information about a saved recovery point.</p>"
@@ -3627,6 +3658,53 @@
         "AdvancedBackupSettings":{
           "shape":"AdvancedBackupSettings",
           "documentation":"<p>Contains a list of <code>BackupOptions</code> for each resource type.</p>"
+        }
+      }
+    },
+    "UpdateBackupSelectionInput":{
+      "type":"structure",
+      "required":[
+        "BackupPlanId",
+        "BackupSelection",
+        "SelectionId"
+      ],
+      "members":{
+        "BackupPlanId":{
+          "shape":"string",
+          "documentation":"<p>Uniquely identifies the backup plan to be associated with the selection of resources.</p>",
+          "location":"uri",
+          "locationName":"backupPlanId"
+        },
+        "BackupSelection":{
+          "shape":"BackupSelection",
+          "documentation":"<p>Specifies the body of a request to assign a set of resources to a backup plan.</p>"
+        },
+        "SelectionId":{
+          "shape":"string",
+          "documentation":"<p>Uniquely identifies the body of a request to assign a set of resources to a backup plan.</p>",
+          "location":"uri",
+          "locationName":"selectionId"
+        },
+        "CreatorRequestId":{
+          "shape":"string",
+          "documentation":"<p>A unique string that identifies the request and allows failed requests to be retried without the risk of running the operation twice.</p>"
+        }
+      }
+    },
+    "UpdateBackupSelectionOutput":{
+      "type":"structure",
+      "members":{
+        "SelectionId":{
+          "shape":"string",
+          "documentation":"<p>Uniquely identifies the body of a request to assign a set of resources to a backup plan.</p>"
+        },
+        "BackupPlanId":{
+          "shape":"string",
+          "documentation":"<p>Uniquely identifies a backup plan.</p>"
+        },
+        "CreationDate":{
+          "shape":"timestamp",
+          "documentation":"<p>The date and time a backup selection is created, in Unix format and Coordinated Universal Time (UTC). The value of <code>CreationDate</code> is accurate to milliseconds. For example, the value 1516925490.087 represents Friday, January 26, 2018 12:11:30.087 AM.</p>"
         }
       }
     },
